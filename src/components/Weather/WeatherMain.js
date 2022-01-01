@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { getWeatherData } from "../../services/OwpService";
 import Search from "../Search/Search";
 import Weather from "./Weather";
+import axios from "axios";
+import { get } from "lodash";
 
 class WeatherMain extends Component {
   constructor(props) {
@@ -17,10 +19,83 @@ class WeatherMain extends Component {
       temperature: "",
       status: "",
       loading: true,
-      displayWeatherCard: false
+      displayWeatherCard: false,
+      latitude : null,
+      longitude : null ,
+      userAddress: null
     };
+
+    this.getLocation = this.getLocation.bind(this)
+
+
+    this.getCoordinates = this.getCoordinates.bind(this)
+
+
+  
+
+
+
+    // you still have to handle rejction errors
+  
+
+
+
+
+
+
   }
 
+
+   getLocation = async e => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this.getCoordinates);
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+
+   
+
+   const response =  await axios.get('https://api.openweathermap.org/data/2.5/weather?lat=33.99825045104792&lon=-6.853202483543013&appid=a7e8689c16bddca198ae1d762f5049cd')
+ 
+  
+
+    setTimeout(() => {
+        this.setState({
+          
+          searchTerm : response.data.name,
+          displayWeatherCard: true,
+          loading: false,
+        });
+
+        this.search()
+      }, 1400);
+
+     
+    
+
+    
+    
+    
+
+
+
+  
+
+  }
+
+
+  getCoordinates = (position)=>{
+
+    console.log(position)
+
+    this.setState(
+      {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      }
+    )
+
+  }
   updateSearchValue = e => {
     const searchTerm = e.target.value;
     console.log(searchTerm);
@@ -85,6 +160,14 @@ class WeatherMain extends Component {
           status={status}
           temperature={temperature}
         />
+
+
+
+        <button onClick={this.getLocation} style={{'position':'absolute', 'top':"8px" , "background":"transparent" , "color":"white" , "border":"none" , "outlineWidth":"0" }} >Use Your Location</button>
+        
+
+
+
       </>
     );
   };
